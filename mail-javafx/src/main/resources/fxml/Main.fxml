@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTreeView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.web.WebView?>
+
+<BorderPane maxHeight="600.0" maxWidth="800.0" minHeight="600.0" minWidth="800.0" style="-fx-background-color: #bdc3c7;" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <left>
+      <VBox prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <JFXTreeView fx:id="treeViewEmailFolders" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </JFXTreeView>
+         </children>
+         <BorderPane.margin>
+            <Insets left="15.0" />
+         </BorderPane.margin>
+      </VBox>
+   </left>
+   <center>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <TableView fx:id="emailTableView" prefHeight="200.0" prefWidth="200.0">
+              <columns>
+                <TableColumn fx:id="subjectCol" prefWidth="75.0" text="Subject" />
+                <TableColumn fx:id="senderCol" prefWidth="75.0" text="Sender" />
+                  <TableColumn fx:id="sizeCol" prefWidth="75.0" text="Size" />
+              </columns>
+            </TableView>
+            <WebView fx:id="messageRenderer" prefHeight="397.0" prefWidth="700.0" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </WebView>
+         </children>
+         <BorderPane.margin>
+            <Insets left="3.0" right="15.0" />
+         </BorderPane.margin>
+      </VBox>
+   </center>
+   <top>
+      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <JFXButton fx:id="btnOne" onAction="#ButtonOneAction" ripplerFill="#2980b9" style="-fx-background-color: #7f8c8d;" text="Button 1" textFill="WHITE">
+               <HBox.margin>
+                  <Insets left="50.0" right="5.0" />
+               </HBox.margin>
+               <font>
+                  <Font name="Roboto Bold" size="14.0" />
+               </font>
+            </JFXButton>
+            <JFXButton fx:id="btnTwo" ripplerFill="#2980b9" style="-fx-background-color: #7f8c8d;" text="Button 2" textFill="WHITE">
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+               <font>
+                  <Font name="Roboto Bold" size="14.0" />
+               </font>
+            </JFXButton>
+            <JFXButton fx:id="btnThree" onAction="#changeReadAction" ripplerFill="#2980b9" style="-fx-background-color: #7f8c8d;" text="Change ReadProperty" textFill="WHITE">
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+               <font>
+                  <Font name="Roboto Bold" size="14.0" />
+               </font>
+            </JFXButton>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" />
+         </BorderPane.margin>
+      </HBox>
+   </top>
+</BorderPane>

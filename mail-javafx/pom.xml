@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.quynguyen</groupId>
+	<artifactId>mail-javafx</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>mail-javafx</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<mainClass>com.quynguyen.mail.Main</mainClass>
+	</properties>
+
+	<organization>
+		<!-- Used as the 'Vendor' for JNLP generation -->
+		<name>Quy Nguyen's Products</name>
+	</organization>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+			<version>11</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-web -->
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-web</artifactId>
+			<version>11</version>
+		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/com.github.jiconfont/jiconfont-bundle -->
+		<dependency>
+			<groupId>com.github.jiconfont</groupId>
+			<artifactId>jiconfont-bundle</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/de.jensd/fontawesomefx-fontawesome -->
+		<dependency>
+			<groupId>de.jensd</groupId>
+			<artifactId>fontawesomefx-fontawesome</artifactId>
+			<version>4.7.0-9.1.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/de.jensd/fontawesomefx-emojione -->
+		<!-- https://www.joypixels.com/emoji -->
+		<dependency>
+			<groupId>de.jensd</groupId>
+			<artifactId>fontawesomefx-emojione</artifactId>
+			<version>3.1.1-9.1.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/de.jensd/fontawesomefx-materialicons -->
+		<!-- Google Material Icons v2.1 -->
+		<!-- https://github.com/Jerady/fontawesomefx-jigsaw-modules/blob/master/src/de.jensd.fx.glyphs.materialicons/de/jensd/fx/glyphs/materialicons/MaterialIcon.java -->
+		<dependency>
+			<groupId>de.jensd</groupId>
+			<artifactId>fontawesomefx-materialicons</artifactId>
+			<version>2.2.0-9.1.2</version>
+		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/com.jfoenix/jfoenix -->
+		<dependency>
+			<groupId>com.jfoenix</groupId>
+			<artifactId>jfoenix</artifactId>
+			<version>9.0.10</version>
+		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx -->
+		<dependency>
+			<groupId>org.controlsfx</groupId>
+			<artifactId>controlsfx</artifactId>
+			<version>11.0.3</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/eu.hansolo/tilesfx -->
+		<dependency>
+			<groupId>eu.hansolo</groupId>
+			<artifactId>tilesfx</artifactId>
+			<version>11.47</version>
+		</dependency>
+	
+
+		<!-- JUnit Test Libraries -->
+		<dependency>
+			<groupId>com.github.javafaker</groupId>
+			<artifactId>javafaker</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.30</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.30</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.5</version>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>unpack-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<excludeScope>system</excludeScope>
+							<excludeGroupIds>junit,org.mockito,org.hamcrest</excludeGroupIds>
+							<outputDirectory>${project.build.directory}/classes</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<id>unpack-dependencies</id>
+
+						<phase>package</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>${java.home}/../bin/javafxpackager</executable>
+							<arguments>
+								<argument>-createjar</argument>
+								<argument>-nocss2bin</argument>
+								<argument>-appclass</argument>
+								<argument>${mainClass}</argument>
+								<argument>-srcdir</argument>
+								<argument>${project.build.directory}/classes</argument>
+								<argument>-outdir</argument>
+								<argument>${project.build.directory}</argument>
+								<argument>-outfile</argument>
+								<argument>${project.build.finalName}.jar</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-cli</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>${java.home}/bin/java</executable>
+							<commandlineArgs>${runfx.args}</commandlineArgs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<source>11</source>
+					<target>11</target>
+					<compilerArguments>
+						<bootclasspath>${sun.boot.class.path}${path.separator}${java.home}/lib/jfxrt.jar</bootclasspath>
+					</compilerArguments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.16</version>
+				<configuration>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${java.home}/lib/jfxrt.jar</additionalClasspathElement>
+					</additionalClasspathElements>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
