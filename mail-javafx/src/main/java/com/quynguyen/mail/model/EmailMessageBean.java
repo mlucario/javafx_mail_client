@@ -64,4 +64,13 @@ public class EmailMessageBean extends AbstractTableItem{
 		formattedValues.put(returnValue, size);
 		return returnValue;
 	}
+
+
+	@Override
+	public String toString() {
+		return String.format("EmailMessageBean [sender=%s, subject=%s, size=%s, content=%s, isRead=%s]", sender,
+				subject, size, content, isRead);
+	}
+	
+	
 }
