@@ -26,10 +26,13 @@ public class FolderUpdaterService extends Service<Void>{
 				for(;;) {
 					try {
 						Thread.sleep(10000);  //10 seconds
-						for(Folder folder : foldersList) {
-							if(folder.getType() != Folder.HOLDS_FOLDERS && folder.isOpen()) {								
-								folder.getMessageCount();
-							}
+						System.out.println("Auto Re-Fetch in 10s . . .");
+						if (FetchFolderService.noServicesActive()) {
+							for (Folder folder : foldersList) {
+								if (folder.getType() != Folder.HOLDS_FOLDERS && folder.isOpen()) {
+									folder.getMessageCount();
+								}
+							} 
 						}
 					} catch (Exception e) {
 						e.printStackTrace();

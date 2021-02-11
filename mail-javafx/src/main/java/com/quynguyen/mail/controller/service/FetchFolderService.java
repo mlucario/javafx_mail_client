@@ -26,6 +26,10 @@ public class FetchFolderService extends Service<Void> {
 		this.folderRoot = folderRoot;
 		this.emailAccountBean = emailAccountBean;
 		this.modelAccess = modelAccess;
+		
+		this.setOnSucceeded(e-> {
+			NUMBER_OF_FETCH_HOLDER_ACTIVE--;
+		});
 	}
 
 	@Override
@@ -35,13 +39,12 @@ public class FetchFolderService extends Service<Void> {
 
 			@Override
 			protected Void call() throws Exception {
-
+				NUMBER_OF_FETCH_HOLDER_ACTIVE++;
 				if (emailAccountBean != null) {
 					Folder[] folders = emailAccountBean.getStore().getDefaultFolder().list();
 
 					for (Folder aFolder : folders) {
-						modelAccess.addFoldersList(aFolder);
-						
+						modelAccess.addFoldersList(aFolder);						
 						
 						EmailFolderBean<String> item = new EmailFolderBean<>(aFolder.getName(), aFolder.getFullName());
 						folderRoot.getChildren().add(item);
@@ -100,4 +103,8 @@ public class FetchFolderService extends Service<Void> {
 		});
 	}
 
+	
+	public static boolean noServicesActive() {
+		return NUMBER_OF_FETCH_HOLDER_ACTIVE == 0;
+	}
 }

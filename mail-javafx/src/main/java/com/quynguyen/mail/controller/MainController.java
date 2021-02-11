@@ -2,12 +2,17 @@ package com.quynguyen.mail.controller;
 
 import java.net.URL;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.ResourceBundle;
+
+import javax.mail.Message;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTreeView;
 import com.quynguyen.mail.controller.service.CreateAndRegisterEmailAccountService;
 import com.quynguyen.mail.controller.service.FolderUpdaterService;
+import com.quynguyen.mail.controller.service.MessageRendererService;
+import com.quynguyen.mail.controller.service.SaveAttachmentsService;
 import com.quynguyen.mail.model.EmailAccountBean;
 import com.quynguyen.mail.model.EmailMessageBean;
 import com.quynguyen.mail.model.ModelAccess;
@@ -15,6 +20,7 @@ import com.quynguyen.mail.model.folder.EmailFolderBean;
 import com.quynguyen.mail.model.table.BoldableRowFactory;
 import com.quynguyen.mail.view.ViewFactory;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,7 +28,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
@@ -59,38 +67,45 @@ public class MainController extends AbstractController implements Initializable 
 	private TableColumn<EmailMessageBean, String> sizeCol;
 
 	@FXML
+	private TableColumn<EmailMessageBean, Date> dateCol;
+
+	@FXML
 	private WebView messageRenderer;
+	private MessageRendererService messageRendererService;
 
 	@FXML
-	private JFXButton btnOne;
+	private JFXButton btnSendEmail;
 
 	@FXML
-	private JFXButton btnTwo;
+	private JFXButton btnDownload;
 
 	@FXML
 	private JFXButton btnThree;
+	@FXML
+	private Label labelDownload;
+	private SaveAttachmentsService saveAttachmentsService;
 
 	@FXML
-	void ButtonOneAction(ActionEvent event) {
+	private ProgressBar progressBarDownload;
 
-		Service<Void> emailService = new Service<Void>() {
-			@Override
-			protected Task<Void> createTask() {
-				return new Task<Void>() {
-					@Override
-					protected Void call() throws Exception {
-						ObservableList<EmailMessageBean> data = getModelAccess().getSelectedFolder().getData();
-//				    	
-//						emailAccountBean.addEmailsToData(data);
-						return null;
-					}
+	@FXML
+	void sendEmail(ActionEvent event) {
+		System.out.println("Send Email");
+		Scene scene = ViewFactory.defaultFactory.getComposeMessageScene();
+		Stage stage = new Stage();
+		stage.setScene(scene);
+		stage.show();
+	}
 
-				};
-			}
+	@FXML
+	void downloadAttachment(ActionEvent event) {
+		System.out.println("downloadAttachment . . . ");
+		EmailMessageBean message = emailTableView.getSelectionModel().getSelectedItem();
 
-		};
-		emailService.start();
-
+		if (message != null && message.hasAttachments()) {
+			this.saveAttachmentsService.setMessageToDownload(message);
+			this.saveAttachmentsService.restart();
+		}
 	}
 
 	@FXML
@@ -110,13 +125,20 @@ public class MainController extends AbstractController implements Initializable 
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+
+		this.saveAttachmentsService = new SaveAttachmentsService(progressBarDownload, labelDownload);
+		labelDownload.setVisible(false);
+		progressBarDownload.setVisible(false);
+		progressBarDownload.progressProperty().bind(this.saveAttachmentsService.progressProperty());
+
+		this.messageRendererService = new MessageRendererService(messageRenderer.getEngine());
+
 		// start check FolderUpdaterService
 		FolderUpdaterService folderUpdaterService = new FolderUpdaterService(getModelAccess().getFoldersList());
 		folderUpdaterService.start();
-		
+
 		ViewFactory viewFactory = ViewFactory.defaultFactory;
 		// NODE advantaged skill : Dynamic CSS style
 		this.emailTableView.setRowFactory(e -> new BoldableRowFactory<EmailMessageBean>());
@@ -125,6 +147,7 @@ public class MainController extends AbstractController implements Initializable 
 		subjectCol.setCellValueFactory(new PropertyValueFactory<EmailMessageBean, String>("subject"));
 		senderCol.setCellValueFactory(new PropertyValueFactory<EmailMessageBean, String>("sender"));
 		sizeCol.setCellValueFactory(new PropertyValueFactory<EmailMessageBean, String>("size"));
+		dateCol.setCellValueFactory(new PropertyValueFactory<EmailMessageBean, Date>("date"));
 
 		// Step 1.1 : We can create SORT for each COL
 		sizeCol.setComparator(new Comparator<String>() {
@@ -138,27 +161,47 @@ public class MainController extends AbstractController implements Initializable 
 			}
 		});
 
+		// Create Comparable date to sort by date
+		dateCol.setComparator(new Comparator<Date>() {
+//			Date date1, date2;
+			@Override
+			public int compare(Date o1, Date o2) {
+				int result = 0;
+				if (o1.compareTo(o2) > 0) {
+					result = 1;
+				} else if (o1.compareTo(o2) < 0) {
+					result = -1;
+				} else if (o1.compareTo(o2) == 0) {
+					result = 0;
+				}
+
+				return result;
+			}
+		});
+
 		// Step 1.2: Set up size for each Column
 		this.emailTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		senderCol.setMaxWidth(1f * Integer.MAX_VALUE * 40);
-		subjectCol.setMaxWidth(1f * Integer.MAX_VALUE * 40);
+		senderCol.setMaxWidth(1f * Integer.MAX_VALUE * 30);
+		subjectCol.setMaxWidth(1f * Integer.MAX_VALUE * 30);
 		sizeCol.setMaxWidth(1f * Integer.MAX_VALUE * 20);
+		dateCol.setMaxWidth(1f * Integer.MAX_VALUE * 20);
 
 		EmailFolderBean<String> root = new EmailFolderBean<>("");
 		treeViewEmailFolders.setRoot(root);
 		treeViewEmailFolders.setShowRoot(false);
 
-		CreateAndRegisterEmailAccountService createAndRegisterEmailAccountService1 = 
-				new CreateAndRegisterEmailAccountService(
-				"nhonquy2019@gmail.com", "RQaVi2sHN6PfZcy", root, getModelAccess());
+		CreateAndRegisterEmailAccountService createAndRegisterEmailAccountService1 = new CreateAndRegisterEmailAccountService(
+				"nhonquy2019@gmail.com", "password", root, getModelAccess());
 
 		createAndRegisterEmailAccountService1.start();
 
-		CreateAndRegisterEmailAccountService createAndRegisterEmailAccountService2 = 
-				new CreateAndRegisterEmailAccountService(
-				"huong.sj.2017@gmail.com", "12345678Aa", root, getModelAccess());
+//		
+//			CreateAndRegisterEmailAccountService createAndRegisterEmailAccountService2 = 
+//					new CreateAndRegisterEmailAccountService(
+//					"huong.sj.2017@gmail.com", "password", root, getModelAccess());
+//
+//			createAndRegisterEmailAccountService2.start();
 
-		createAndRegisterEmailAccountService2.start();
 		// FetchFolderService Already Handle lines of code
 //		EmailFolderBean<String> quynguyen = new EmailFolderBean<>("example@yahoo.com");
 //		root.getChildren().add(quynguyen);
@@ -215,7 +258,13 @@ public class MainController extends AbstractController implements Initializable 
 			EmailMessageBean message = this.emailTableView.getSelectionModel().getSelectedItem();
 			if (message != null) {
 				getModelAccess().setSelectedMessage(message);
-				messageRenderer.getEngine().loadContent(message.getContent());
+				// messageRenderer.getEngine().loadContent(message.getContent());
+
+				// Load content when click on email
+				this.messageRendererService.setMessageToRender(message);
+				this.messageRendererService.restart();
+				// On Application Thread!!
+//				Platform.runLater(messageRendererService); 
 			}
 		});
 

@@ -1,4 +1,4 @@
-package com.quynguyen.mail.controller;
+ package com.quynguyen.mail.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -41,7 +41,9 @@ public class EmailDetailsController  extends AbstractController implements Initi
 		EmailMessageBean selectedMessage = getModelAccess().getSelectedMessage();
 		this.labelSubject.setText(selectedMessage.getSubject());
 		this.labelSender.setText(selectedMessage.getSender());		
-		this.webviewEmailDetails.getEngine().loadContent(selectedMessage.getContent());
+		
+		
+		//this.webviewEmailDetails.getEngine().loadContent(selectedMessage.getContent());
 		
 		
 	}

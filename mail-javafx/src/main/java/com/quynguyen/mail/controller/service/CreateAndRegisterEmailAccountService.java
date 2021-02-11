@@ -48,6 +48,9 @@ public class CreateAndRegisterEmailAccountService extends Service<Integer>{
 					FetchFolderService fetchFolderService = new FetchFolderService(folderRoot, emailAccount,modelAccess);
 					fetchFolderService.start();
 					
+					// need FOR SEND EMAIL MESSAGE
+					modelAccess.addAccount(emailAccount);
+					
 				}
 				return emailAccount.getLoginState();
 			}

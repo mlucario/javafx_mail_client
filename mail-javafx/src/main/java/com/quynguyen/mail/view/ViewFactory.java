@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.naming.OperationNotSupportedException;
 
 import com.quynguyen.mail.controller.AbstractController;
+import com.quynguyen.mail.controller.ComposeMessageController;
 import com.quynguyen.mail.controller.EmailDetailsController;
 import com.quynguyen.mail.controller.MainController;
 import com.quynguyen.mail.model.ModelAccess;
@@ -28,6 +29,8 @@ public class ViewFactory {
 	private static final String FXML_EMAIL_DETAILS_LAYOUT_FXML = "/fxml/EmailDetailsLayout.fxml";
 
 	private static final String STYLES_EMAIL_DETAILS_STYLE_CSS = "/styles/EmailDetailsStyle.css";
+	
+	private final String COMPOSE_SCREEN_FXML = "/fxml/ComposeMessageLayout.fxml";
 
 	private static final String STYLES_STYLES_CSS = "/styles/Styles.css";
 
@@ -76,6 +79,13 @@ public class ViewFactory {
 		return initializeScene(FXML_EMAIL_DETAILS_LAYOUT_FXML, emailDetailsController);
 	}
 
+	
+	public Scene getComposeMessageScene(){
+		AbstractController composeController = new ComposeMessageController(modelAccess);
+		return initializeScene(COMPOSE_SCREEN_FXML, composeController);
+	}
+	
+	
 	// Set controller for View FXML
 	private Scene initializeScene(String fxmlPath, AbstractController abstractController) {
 		FXMLLoader loader;
